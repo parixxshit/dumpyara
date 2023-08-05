@@ -33,7 +33,7 @@ else
     echo "GitHub token not found. Dumping just locally..."
 fi
 
-# download or copy from local?
+# Download or copy from local?
 if echo "$1" | grep -e '^\(https\?\|ftp\)://.*$' > /dev/null; then
     # 1DRV URL DIRECT LINK IMPLEMENTATION
     if echo "$1" | grep -e '1drv.ms' > /dev/null; then
@@ -52,7 +52,7 @@ else
     [[ -e "$URL" ]] || { echo "Invalid Input" && exit 1; }
 fi
 
-ORG=Jiovanni-dump #your GitHub org name
+ORG=parixxshit # Your GitHub org name
 FILE=$(echo ${URL##*/} | inline-detox)
 EXTENSION=$(echo ${URL##*.} | inline-detox)
 UNZIP_DIR=${FILE/.$EXTENSION/}
@@ -66,7 +66,7 @@ elif [[ -f "$1" ]]; then
     cp -a "$1" "$PROJECT_DIR"/input/"${FILE}" > /dev/null 2>&1
 fi
 
-# clone other repo's
+# Clone other repo's
 if [[ -d "$PROJECT_DIR/Firmware_extractor" ]]; then
     git -C "$PROJECT_DIR"/Firmware_extractor pull --recurse-submodules
 else
@@ -83,7 +83,7 @@ else
     git clone -q https://github.com/marin-m/vmlinux-to-elf "$PROJECT_DIR/vmlinux-to-elf"
 fi
 
-# extract rom via Firmware_extractor
+# Extract rom via Firmware_extractor
 [[ ! -d "$1" ]] && bash "$PROJECT_DIR"/Firmware_extractor/extractor.sh "$PROJECT_DIR"/input/"${FILE}" "$PROJECT_DIR"/working/"${UNZIP_DIR}"
 
 # Extract boot.img
@@ -114,7 +114,7 @@ for dtb_file in $dtb_list; do
     dtc -I dtb -O dts -o "$(echo "$PROJECT_DIR"/working/"${UNZIP_DIR}"/bootdts/"$dtb_file" | sed -r 's|.dtb|.dts|g')" "$PROJECT_DIR"/working/"${UNZIP_DIR}"/bootimg/"$dtb_file" > /dev/null 2>&1
 done
 
-# extract PARTITIONS
+# Extract PARTITIONS
 cd "$PROJECT_DIR"/working/"${UNZIP_DIR}" || exit
 for p in $PARTITIONS; do
     # Try to extract images via fsck.erofs
@@ -165,7 +165,7 @@ if [ -e "$PROJECT_DIR"/working/"${UNZIP_DIR}"/vendor/build.prop ]; then
 fi
 sort -u -o "$PROJECT_DIR"/working/"${UNZIP_DIR}"/board-info.txt "$PROJECT_DIR"/working/"${UNZIP_DIR}"/board-info.txt
 
-# set variables
+# Set variables
 ls system/build*.prop 2> /dev/null || ls system/system/build*.prop 2> /dev/null || { echo "No system build*.prop found, pushing cancelled!" && exit; }
 flavor=$(grep -oP "(?<=^ro.build.flavor=).*" -hs {system,system/system,vendor}/build*.prop | head -n 1)
 [[ -z "${flavor}" ]] && flavor=$(grep -oP "(?<=^ro.vendor.build.flavor=).*" -hs vendor/build*.prop | head -n 1)
@@ -236,7 +236,7 @@ if python3 -c "import aospdtgen"; then
     fi
 fi
 
-# copy file names
+# Copy file names
 chown "$(whoami)" ./* -R
 chmod -R u+rwX ./* #ensure final permissions
 find "$PROJECT_DIR"/working/"${UNZIP_DIR}" -type f -printf '%P\n' | sort | grep -v ".git/" > "$PROJECT_DIR"/working/"${UNZIP_DIR}"/all_files.txt
@@ -246,10 +246,10 @@ if [[ -n $GIT_OAUTH_TOKEN ]]; then
     curl --silent --fail "https://raw.githubusercontent.com/$ORG/$repo/$branch/all_files.txt" 2> /dev/null && echo "Firmware already dumped!" && exit 1
     git init
     if [[ -z "$(git config --get user.email)" ]]; then
-        git config user.email giovanniricca@duck.com
+        git config user.email 87859520+parixshit@users.noreply.github.com
     fi
     if [[ -z "$(git config --get user.name)" ]]; then
-        git config user.name Jiovanni-bot
+        git config user.name parixshit
     fi
     curl -s -X POST -H "Authorization: token ${GIT_OAUTH_TOKEN}" -d '{ "name": "'"$repo"'" }' "https://api.github.com/orgs/${ORG}/repos" #create new repo
     curl -s -X PUT -H "Authorization: token ${GIT_OAUTH_TOKEN}" -H "Accept: application/vnd.github.mercy-preview+json" -d '{ "names": ["'"$manufacturer"'","'"$platform"'","'"$top_codename"'"]}' "https://api.github.com/repos/${ORG}/${repo}/topics"
@@ -325,7 +325,7 @@ fi
 # Telegram channel
 TG_TOKEN=$(< "$PROJECT_DIR"/.tgtoken)
 if [[ -n "$TG_TOKEN" ]]; then
-    CHAT_ID="@jiovanni_dumps"
+    CHAT_ID="@parixshitbuilds"
     commit_head=$(git log --format=format:%H | head -n 1)
     commit_link="https://github.com/$ORG/$repo/commit/$commit_head"
     echo -e "Sending telegram notification"
