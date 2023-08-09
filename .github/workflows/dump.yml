@@ -2,9 +2,10 @@ name: Dump
 
 on:
   workflow_dispatch:
-
-env:
-  DUMP_URL: "https://bigota.d.miui.com/V14.0.3.0.TGCMIXM/miui_SPESGlobal_V14.0.3.0.TGCMIXM_308da77f3c_13.0.zip" # Direct url to a recovery zip
+    inputs:
+      DUMP_URL:
+        description: "Direct url to a recovery zip"
+        default: "https://bigota.d.miui.com/V14.0.3.0.TGCMIXM/miui_SPESGlobal_V14.0.3.0.TGCMIXM_308da77f3c_13.0.zip"
 
 jobs:
   dump:
@@ -20,5 +21,10 @@ jobs:
       - name: Environment
         run: bash setup.sh
 
+      - name: Secrets
+        run: |
+          echo "${{ secrets.GIT_TOKEN }}" > .githubtoken
+          echo "${{ secrets.TELEGRAM_TOKEN }}" > .tgtoken
+
       - name: Dumpyara
-        run: bash dumpyara.sh "$DUMP_URL" ${{ secrets.GIT_TOKEN }}
+        run: bash dumpyara.sh ${{ inputs.DUMP_URL }}
